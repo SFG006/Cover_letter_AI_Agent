@@ -1,0 +1,154 @@
+{
+  "name": "Smart Cover Letter Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cover-letter",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -20
+      ],
+      "id": "c594f11c-fdab-4643-bda6-d4be92718988",
+      "name": "Webhook",
+      "webhookId": "86306307-ce80-4f45-ad3e-882e4f56fa39"
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-r1-0528:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        160,
+        200
+      ],
+      "id": "28c3aa58-2c8e-4f9e-a9b7-b86d570bf317",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "2Q6e6hFRfEOtT0oV",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a professional cover letter assistant. Given a resume and a job description, your task is to generate a customized and impressive cover letter.\n\nResume: {{ $json.body.resume }}\nJob Description: {{ $json.body.job_description }}\n\nPlease write the full cover letter now:\n",
+        "options": {
+          "systemMessage": "=You are a professional cover letter assistant. Given a resume and a job description, your task is to generate a customized and impressive cover letter."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        140,
+        -20
+      ],
+      "id": "84f4874c-4412-4d20-b3da-1d29d9b09b2c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "06834219-e4d5-4e7f-8f5c-8784b83310b2",
+              "name": "cover_letter",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -20
+      ],
+      "id": "a3326337-08a2-4f34-ba72-bbcb2a33686e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "language": "python",
+        "pythonCode": "import re\n\n# Get input from the previous node\ncover_letter = items[0]['json'].get('cover_letter')\n\ndef clean_cover_letter(text):\n    if not text:\n        return \"\"\n\n    # Remove Markdown formatting and unwanted characters\n    # cleaned = re.sub(r'[*#`]', '', text)            # Remove *, #, `\n    cleaned = re.sub(r'\\\\n|\\\\r|\\\\t|\\n', ' ', text) # Replace newlines and tabs with space\n    cleaned = re.sub(r'\\s+', ' ', cleaned)          # Collapse multiple spaces\n    return cleaned.strip()\n\n# Clean the input and return as new output\nreturn [{\n    \"json\": {\n        \"cleaned_cover_letter\": clean_cover_letter(cover_letter)\n    }\n}]\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        -20
+      ],
+      "id": "2933c2e0-b681-486d-82c7-56cf819092a7",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "df93c200-24c8-4028-90e6-00c055ce700f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "42c0549b0dd0b74c583c28ccfcbcbb7372a33b9dcc44101e24804c7eb5079f61"
+  },
+  "id": "BeHhsYnCGvGQxPdB",
+  "tags": []
+}
