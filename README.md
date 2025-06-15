@@ -63,7 +63,7 @@ This guides the AI to create a personalized, job-targeted letter based on the tw
 
 ---
 
-### 🔍 Cleaning the Output (Optional)
+### 🔍 Cleaning the Output
 
 A Code Node can be used to clean Markdown formatting from the AI response:
 
@@ -74,9 +74,7 @@ def clean_cover_letter(text):
     if not text:
         return ""
 
-    cleaned = re.sub(r'[*#`]', '', text)                 # Remove *, #, `
-    cleaned = re.sub(r'\[.*?\]', '', cleaned)            # Remove anything inside []
-    cleaned = re.sub(r'\\n|\\r|\\t|\n', ' ', cleaned)     # Replace newlines and tabs with space
+    cleaned = re.sub(r'\\n|\\r|\\t|\n', ' ', text)     # Replace newlines and tabs with space
     cleaned = re.sub(r'\s+', ' ', cleaned)               # Collapse multiple spaces
     return cleaned.strip()
 
@@ -98,5 +96,3 @@ Start the n8n instance and test the webhook with a tool like Postman or cURL. Ma
 * This setup doesn't support PDF input directly — it's designed for structured text only.
 
 ---
-
-Would you like this as a downloadable `.md` file or uploaded to GitHub later?
