@@ -1,5 +1,9 @@
 # 📄 Cover_letter_AI_Agent
 
+### 📷 Screenshot
+
+![workflow](https://github.com/user-attachments/assets/0e4a4c94-8226-4e36-898a-3c9245f89efb)
+
 ### 🔧 What It Does
 
 This n8n workflow automates the creation of a customized cover letter by using an **AI agent**. It accepts:
